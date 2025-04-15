@@ -1,46 +1,67 @@
-import { createSignal, onMount, Component } from 'solid-js';
-import { openTransactionPopup, PopupConfig } from 'pulsix'; // Assumendo una struttura di export
+import { Component, onMount, onCleanup, splitProps } from 'solid-js';
+// Importa SOLO i tipi staticamente, se possibile
+import type { PopupConfig } from 'pulsix';
+import type { JSX } from 'solid-js';
 
-interface PulsixButtonProps {
-  userId?: string; // O widgetId, a seconda della tua API
-  buttonText?: string;
-  popupConfig?: PopupConfig;
+export interface PulsixButtonProps extends Omit<PopupConfig, 'onClose' /* ... */> {
+  label?: string;
+  class?: string;
+  style?: JSX.CSSProperties | string;
+  disabled?: boolean;
 }
 
 export const PulsixButton: Component<PulsixButtonProps> = (props) => {
-  const handleClick = () => {
-    // Questa funzione viene chiamata solo nel browser (click event)
-    console.log('Button clicked, opening popup...');
-    const config: PopupConfig = {
-      ...props.popupConfig, // Prendi la config dalle props
-      widgetId: props.userId, // Passa l'ID utente/widget
-    };
-    openTransactionPopup(config);
-  };
+  const [popupOptions, buttonProps] = splitProps(props, [
+    "userId", "transactionDetails", /* ...altre opzioni PopupConfig... */ "label"
+  ]);
 
-  // onMount viene eseguito solo sul client dopo il rendering iniziale
+  let buttonRef: HTMLButtonElement | undefined;
+
   onMount(() => {
-    console.log('PulsixButton mounted on the client.');
-    // Qui puoi mettere codice che DEVE girare solo nel browser
-    // all'avvio del componente, se necessario (es. inizializzare
-    // qualcosa basato sul DOM). In questo caso specifico del bottone,
-    // probabilmente non serve nulla qui, basta l'handler onClick.
+    // Definisci handleClick qui dentro
+    const handleClick = async () => { // Rendi la funzione async
+      console.log("Client button clicked. Dynamically importing pulsix...");
+      try {
+        // --- IMPORT DINAMICO QUI ---
+        const pulsixModule = await import('pulsix');
+        // --------------------------
+
+        console.log("Pulsix module loaded. Calling openTransactionPopup with options:", popupOptions);
+        // Chiama la funzione dal modulo importato dinamicamente
+        pulsixModule.openTransactionPopup({
+          userId: popupOptions.userId,
+          transactionDetails: popupOptions.transactionDetails,
+          // ... pass other options ...
+        });
+      } catch (error) {
+        console.error("Error loading or calling pulsix module:", error);
+        // Gestisci l'errore, magari mostrando un messaggio all'utente
+      }
+    };
+
+    if (buttonRef) {
+      buttonRef.addEventListener('click', handleClick);
+      console.log("PulsixButton (Solid Wrapper): Click listener added (dynamic import handler).");
+
+      onCleanup(() => {
+        if (buttonRef) {
+          buttonRef.removeEventListener('click', handleClick);
+          console.log("PulsixButton (Solid Wrapper): Click listener removed (dynamic import handler).");
+        }
+      });
+    }
   });
 
-  // createEffect viene eseguito sia sul server (se non configurato diversamente)
-  // sia sul client. Per codice solo client, onMount è più sicuro o usa:
-  // createEffect(() => {
-  //   if (!isServer) { // isServer è importato da "solid-js/web"
-  //      // Codice solo client
-  //   }
-  // });
-
   return (
-    <button onClick={handleClick}>
-      {props.buttonText || 'Apri Popup'} {/* Usa un testo di default */}
+    <button
+      ref={buttonRef}
+      type="button"
+      class={buttonProps.class}
+      style={buttonProps.style}
+      disabled={props.disabled}
+      {...buttonProps}
+    >
+      {popupOptions.label || 'Apri Transazione'}
     </button>
   );
 };
-
-// Non esportare direttamente la classe Web Component qui, se PulsixButton
-// è inteso come un componente Solid puro.
