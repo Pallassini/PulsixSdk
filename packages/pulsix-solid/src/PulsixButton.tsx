@@ -1,55 +1,50 @@
-import { onMount, onCleanup, createEffect, Component, splitProps } from 'solid-js';
-import { createPulsixButton, PulsixButtonOptions, PulsixButtonInstance } from 'pulsix';
-import type { JSX } from 'solid-js'; // Per tipi come HTMLAttributes
+import { Component, splitProps } from 'solid-js';
+// Importa la funzione e il tipo che SONO esportati da 'pulsix'
+import { openTransactionPopup, PopupConfig } from 'pulsix';
+import type { JSX } from 'solid-js';
 
-// Props per il componente Solid, eredita quelle della libreria core
-// Usiamo Omit per escludere props che verranno gestite diversamente (es. ref)
-export interface PulsixButtonProps extends Omit<PulsixButtonOptions, 'userId'> {
-  userId: string;
-  // Aggiungi qui props specifiche Solid/HTML se necessario
+// Definisci le props necessarie per chiamare openTransactionPopup
+// Assumendo che PopupConfig contenga userId, etc.
+// Rimuovi le props che non servono più (es. quelle specifiche di createPulsixButton se c'erano)
+export interface PulsixButtonProps extends Omit<PopupConfig, 'onClose' /* o altre gestite internamente */> {
+  // Forse vuoi un'etichetta per il bottone Solid
+  label?: string;
+  // Props HTML standard
   class?: string;
   style?: JSX.CSSProperties | string;
+  // Aggiungi qui altre props HTML se necessario (id, disabled, etc.)
 }
 
 export const PulsixButton: Component<PulsixButtonProps> = (props) => {
-  let containerRef: HTMLDivElement | undefined;
-  let instance: PulsixButtonInstance | null = null;
-
-  // Separa le props della libreria core dalle props HTML standard (class, style, etc.)
-  const [pulsixOptions, htmlProps] = splitProps(props, [
-    "userId", "label", "onSuccess", "onError", /* ...altre PulsixButtonOptions */
+  // Separa le props per openTransactionPopup dalle props HTML per il bottone
+  const [popupOptions, buttonProps] = splitProps(props, [
+    "userId", // Elenca qui tutte le proprietà di PopupConfig che ricevi come props
+    "transactionDetails", // Esempio, aggiungi le altre opzioni di PopupConfig
+    // ... altre opzioni ...
+    "label", // Includi label qui se la gestisci separatamente
   ]);
 
-  onMount(() => {
-    let currentInstance: PulsixButtonInstance | null = null;
-    if (containerRef) {
-      // Pulisci contenuto precedente
-       while (containerRef.firstChild) {
-          containerRef.removeChild(containerRef.firstChild);
-       }
-      // Crea l'istanza core
-      currentInstance = createPulsixButton(containerRef, pulsixOptions);
-      instance = currentInstance;
-    }
-    // La cleanup viene registrata qui per essere associata a questo onMount
-    onCleanup(() => {
-      currentInstance?.destroy();
-      instance = null;
+  const handleClick = () => {
+    // Chiama la funzione esportata quando il bottone viene cliccato
+    openTransactionPopup({
+      userId: popupOptions.userId,
+      transactionDetails: popupOptions.transactionDetails, // Passa le altre opzioni
+      // Potresti voler aggiungere qui handler onClose o altri specifici per il wrapper
+      // onClose: () => { console.log("Popup chiuso dal wrapper Solid"); }
     });
-  });
+  };
 
-  // createEffect per aggiornare le opzioni quando le props cambiano
-  // Solid traccia automaticamente le dipendenze (pulsixOptions)
-  createEffect(() => {
-    if (instance) {
-      // Passiamo l'oggetto `pulsixOptions` direttamente,
-      // Solid sa quando rieseguire l'effetto se cambiano
-      const { userId, ...updatableOptions } = pulsixOptions;
-      instance.updateOptions(updatableOptions);
-    }
-  });
-
-  // Renderizza un div contenitore a cui la libreria si attaccherà
-  // Applica le props HTML rimanenti (class, style, id, etc.)
-  return <div ref={containerRef} {...htmlProps}></div>;
+  // Renderizza un bottone standard SolidJS
+  return (
+    <button
+      type="button" // Buona pratica per bottoni non di submit
+      onClick={handleClick}
+      class={buttonProps.class} // Usa le props HTML rimanenti
+      style={buttonProps.style}
+      // disabled={...} // Puoi aggiungere logica per disabilitare
+      {...buttonProps} // Passa eventuali altre props HTML standard
+    >
+      {popupOptions.label || 'Apri Transazione'} {/* Usa la label fornita o una default */}
+    </button>
+  );
 };
