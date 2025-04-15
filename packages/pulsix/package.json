@@ -1,0 +1,53 @@
+{
+  "name": "pulsix",
+  "version": "1.0.1",
+  "description": "SDK per aggiungere transazioni tramite popup",
+  "type": "module",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "vite build && tsc --project tsconfig.json",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:vite": "vite build --watch",
+    "dev:tsc": "tsc --watch --preserveWatchOutput --project tsconfig.json",
+    "dev": "concurrently \"pnpm:dev:vite\" \"pnpm:dev:tsc\""
+  },
+  "keywords": [
+    "pulsix",
+    "popup",
+    "widget",
+    "transaction",
+    "finance",
+    "sdk"
+  ],
+  "author": "Il Tuo Nome <tua.email@example.com> (https://tuo.sito)",
+  "license": "MIT",
+  "packageManager": "pnpm@10.7.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tuo_username/pulsix.git"
+  },
+  "homepage": "https://github.com/tuo_username/pulsix#readme",
+  "bugs": {
+    "url": "https://github.com/tuo_username/pulsix/issues"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "./dist/index.umd.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "devDependencies": {
+    "@types/node": "^22.14.1",
+    "concurrently": "^9.1.2",
+    "typescript": "^5.8.3",
+    "vite": "^6.2.6"
+  }
+}

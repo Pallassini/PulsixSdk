@@ -1,0 +1,39 @@
+{
+  "name": "pulsix-react",
+  "version": "1.0.1", 
+  "description": "React components for Pulsix SDK",
+  "type": "module",
+  "main": "./dist/index.js", 
+  "module": "./dist/index.mjs", 
+  "types": "./dist/index.d.ts", 
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+
+    "build": "vite build && tsc --emitDeclarationOnly --project tsconfig.json",
+    "dev": "vite build --watch"
+  },
+  "peerDependencies": {
+    "react": "^17.0.0 || ^18.0.0", 
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "pulsix": "^1.0.1-alpha.0" 
+  },
+  "devDependencies": {
+    "@types/react": "^18.x.x", 
+    "@types/react-dom": "^18.x.x",
+    "react": "^18.x.x", 
+    "react-dom": "^18.x.x",
+    "typescript": "^5.x.x", 
+    "vite": "^5.x.x",
+    "pulsix": "workspace:*" 
+  },
+  "license": "MIT"
+}

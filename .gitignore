@@ -1,0 +1,34 @@
+# Node
+node_modules/
+pnpm-lock.yaml  # Ignora se non vuoi committarlo, ma è consigliato committarlo
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output from all packages
+packages/*/dist/
+packages/*/build/
+packages/*/.turbo/
+packages/*/.vite/
+
+# IDE directories & OS files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Test Results
+coverage/
