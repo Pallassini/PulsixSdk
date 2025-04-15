@@ -1,50 +1,62 @@
-import { Component, splitProps } from 'solid-js';
-// Importa la funzione e il tipo che SONO esportati da 'pulsix'
+import { Component, onMount, onCleanup, splitProps } from 'solid-js';
+// Assicurati che openTransactionPopup e PopupConfig siano importati correttamente
 import { openTransactionPopup, PopupConfig } from 'pulsix';
 import type { JSX } from 'solid-js';
 
-// Definisci le props necessarie per chiamare openTransactionPopup
-// Assumendo che PopupConfig contenga userId, etc.
-// Rimuovi le props che non servono più (es. quelle specifiche di createPulsixButton se c'erano)
-export interface PulsixButtonProps extends Omit<PopupConfig, 'onClose' /* o altre gestite internamente */> {
-  // Forse vuoi un'etichetta per il bottone Solid
+export interface PulsixButtonProps extends Omit<PopupConfig, 'onClose' /* ... */> {
   label?: string;
-  // Props HTML standard
   class?: string;
   style?: JSX.CSSProperties | string;
-  // Aggiungi qui altre props HTML se necessario (id, disabled, etc.)
+  disabled?: boolean; // Aggiungi la prop disabled se vuoi poterla passare
 }
 
 export const PulsixButton: Component<PulsixButtonProps> = (props) => {
-  // Separa le props per openTransactionPopup dalle props HTML per il bottone
   const [popupOptions, buttonProps] = splitProps(props, [
-    "userId", // Elenca qui tutte le proprietà di PopupConfig che ricevi come props
-    "transactionDetails", // Esempio, aggiungi le altre opzioni di PopupConfig
-    // ... altre opzioni ...
-    "label", // Includi label qui se la gestisci separatamente
+    "userId", "transactionDetails", /* ...altre opzioni PopupConfig... */ "label"
   ]);
 
+  // Riferimento all'elemento bottone HTML
+  let buttonRef: HTMLButtonElement | undefined;
+
+  // Definisci l'handler separatamente
   const handleClick = () => {
-    // Chiama la funzione esportata quando il bottone viene cliccato
+    // Questo codice ora verrà chiamato solo sul client quando si clicca
+    console.log("Opening popup from client-side handler with options:", popupOptions);
     openTransactionPopup({
       userId: popupOptions.userId,
-      transactionDetails: popupOptions.transactionDetails, // Passa le altre opzioni
-      // Potresti voler aggiungere qui handler onClose o altri specifici per il wrapper
-      // onClose: () => { console.log("Popup chiuso dal wrapper Solid"); }
+      transactionDetails: popupOptions.transactionDetails,
+      // ... pass other options ...
     });
   };
 
-  // Renderizza un bottone standard SolidJS
+  onMount(() => {
+    // Aggiungi l'event listener *solo* nel browser quando il componente è montato
+    if (buttonRef) {
+      buttonRef.addEventListener('click', handleClick);
+      console.log("PulsixButton (Solid Wrapper): Click listener added on mount.");
+
+      // Cleanup: Rimuovi il listener quando il componente viene smontato
+      onCleanup(() => {
+        if (buttonRef) {
+          buttonRef.removeEventListener('click', handleClick);
+          console.log("PulsixButton (Solid Wrapper): Click listener removed on cleanup.");
+        }
+      });
+    }
+  });
+
+  // Renderizza un bottone standard SolidJS, assegnando il ref
   return (
     <button
-      type="button" // Buona pratica per bottoni non di submit
-      onClick={handleClick}
-      class={buttonProps.class} // Usa le props HTML rimanenti
+      ref={buttonRef} // Assegna il ref all'elemento bottone
+      type="button"
+      // Non assegnare onClick qui, lo facciamo in onMount
+      class={buttonProps.class}
       style={buttonProps.style}
-      // disabled={...} // Puoi aggiungere logica per disabilitare
+      disabled={props.disabled} // Passa la prop disabled
       {...buttonProps} // Passa eventuali altre props HTML standard
     >
-      {popupOptions.label || 'Apri Transazione'} {/* Usa la label fornita o una default */}
+      {popupOptions.label || 'Apri Transazione'}
     </button>
   );
 };
