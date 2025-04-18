@@ -1,101 +1,82 @@
-/* PulsixButton.module.css - Con animazione keyframes per l'hover */
+/* style.css - Stili globali per il bottone Pulsix (CON !important - NON RACCOMANDATO) */
 
 /* --- Definizione Keyframes per l'ingrandimento --- */
 @keyframes scaleUpEffect {
    0% {
-     /* Stato iniziale (uguale a quello base) */
      transform: scale(1);
      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
    }
    60% {
-     /* Va leggermente oltre la scala finale per un effetto più elastico */
      transform: scale(1.07);
-     box-shadow: 0 7px 14px rgba(0, 0, 0, 0.22); /* Ombra più grande a metà animazione */
+     box-shadow: 0 7px 14px rgba(0, 0, 0, 0.22);
    }
    100% {
-     /* Stato finale dell'hover */
      transform: scale(1.05);
-     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Ombra finale dell'hover */
+     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
    }
  }
  /* ----------------------------------------------- */
- 
+
  .pulsixButton {
-   /* Stili base */
-   display: inline-block;
-   font-family: sans-serif;
-   color: white;
-   padding: 12px 24px;
-   border-radius: 6px;
-   font-size: 1.05rem;
-   font-weight: 500;
-   border: none;
-   cursor: pointer;
-   outline: none;
-   white-space: nowrap;
-   /* Stato base per trasformazione e ombra */
-   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-   transform: scale(1);
-   /* Transizioni: includi transform e box-shadow per il ritorno allo stato normale */
+   display: inline-block !important;
+   font-family: sans-serif !important;
+   color: white !important;
+   padding: 12px 24px !important;
+   border-radius: 6px !important;
+   font-size: 1.05rem !important;
+   font-weight: 500 !important;
+   border: none !important;
+   cursor: pointer !important;
+   outline: none !important;
+   white-space: nowrap !important;
+   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+   transform: scale(1) !important; /* Stato base transform */
    transition: background-color 0.2s ease-in-out,
-               transform 0.2s ease-out, /* Controlla il ritorno quando l'hover finisce */
-               box-shadow 0.25s ease-in-out, /* Controlla il ritorno dell'ombra */
-               filter 0.2s ease-in-out; /* Transizione anche per brightness */
-   /* Colore di sfondo di default */
-   background-color: #007bff;
+               transform 0.2s ease-out,
+               box-shadow 0.25s ease-in-out,
+               filter 0.2s ease-in-out !important; /* Aggiunto !important all'intera prop transition */
+   background-color: #007bff !important; /* Colore di sfondo di default */
  }
- 
+
  /* Stili per Hover (quando non disabilitato) */
  .pulsixButton:not([disabled]):hover {
-   /* Applica l'animazione definita sopra */
-   animation: scaleUpEffect 0.3s ease-out forwards;
-   /* 'forwards' mantiene lo stato finale dell'animazione (100%) */
- 
-   /* Applica ancora il filtro per scurire lo sfondo durante l'animazione */
-   filter: brightness(90%);
- 
-   /* Non impostiamo più transform e box-shadow direttamente qui,
-      ci pensa l'animazione */
+   animation: scaleUpEffect 0.3s ease-out forwards !important;
+   filter: brightness(90%) !important;
  }
- 
+
  /* Stili per Active (quando non disabilitato) */
  .pulsixButton:not([disabled]):active {
-   filter: brightness(80%);
-   /* Sovrascrive transform e shadow dell'animazione hover mentre è premuto */
-   transform: scale(0.99);
-   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-   /* Interrompe l'animazione di hover se è in corso mentre si clicca */
-   animation: none;
+   filter: brightness(80%) !important;
+   transform: scale(0.99) !important;
+   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15) !important;
+   animation: none !important;
  }
- 
+
  /* Stili per Focus (quando non disabilitato) */
- .pulsixButton:not(:disabled):focus-visible {
+ .pulsixButton:not([disabled]):focus-visible {
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5),
-                0 2px 4px rgba(0, 0, 0, 0.1); /* Mantiene l'ombra base durante il focus */
+                0 2px 4px rgba(0, 0, 0, 0.1) !important; /* Applica !important all'intera prop */
  }
- 
- /* Stili per lo stato Disabilitato */
- .pulsixButton:disabled {
-   background-color: #cccccc;
-   color: #666666;
-   cursor: not-allowed;
-   transform: none;
-   box-shadow: none;
-   opacity: 0.6;
-   filter: none; /* Assicura che non ci siano filtri */
-   animation: none; /* Assicura che non ci siano animazioni */
+
+ /* Stili per lo stato Disabilitato (usa selettore attributo) */
+ .pulsixButton[disabled] {
+   background-color: #cccccc !important;
+   color: #666666 !important;
+   cursor: not-allowed !important;
+   transform: none !important;
+   box-shadow: none !important;
+   opacity: 0.6 !important;
+   filter: none !important;
+   animation: none !important;
  }
- 
- /* Animazione pulse (invariata, puoi usarla aggiungendo la classe 'pulsing') */
+
+ /* Animazione pulse (invariata nei keyframes, ma l'applicazione ha !important) */
  @keyframes pulseAnimation {
-      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); }
-      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
-      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
+     0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); }
+     70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
+     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
  }
- 
- .pulsing:not(:disabled) {
-     animation: pulseAnimation 2s infinite;
-     /* Nota: Questa animazione 'pulse' potrebbe entrare in conflitto
-        o interagire in modo strano con l'animazione 'scaleUpEffect' sull'hover.
-        Potrebbe essere necessario scegliere quale effetto avere o combinarli con attenzione. */
+
+ .pulsixButton.pulsing:not([disabled]) {
+     animation: pulseAnimation 2s infinite !important;
  }
