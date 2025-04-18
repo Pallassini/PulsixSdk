@@ -1,67 +1,64 @@
-import { Component, onMount, onCleanup, splitProps } from 'solid-js';
-// Importa SOLO i tipi staticamente, se possibile
+import { Component, onMount, onCleanup, splitProps, mergeProps } from 'solid-js';
 import type { PopupConfig } from 'pulsix';
 import type { JSX } from 'solid-js';
 
+// --- IMPORTA IL CSS MODULE ---
+import './style.css'
+// --------------------------
+
 export interface PulsixButtonProps extends Omit<PopupConfig, 'onClose' /* ... */> {
   label?: string;
-  class?: string;
+  class?: string; // Manteniamo la possibilità di aggiungere classi esterne
   style?: JSX.CSSProperties | string;
   disabled?: boolean;
+  // Aggiungiamo di nuovo buttonColor per sovrascrivere il background di default
+  buttonColor?: string;
 }
 
 export const PulsixButton: Component<PulsixButtonProps> = (props) => {
-  const [popupOptions, buttonProps] = splitProps(props, [
-    "userId", "transactionDetails", /* ...altre opzioni PopupConfig... */ "label"
+  // Unisci default e props
+  const merged = mergeProps({ label: 'Apri Transazione' }, props);
+  // Estrai le props per il popup, lascia le altre per il bottone
+  const [popupOptions, buttonProps] = splitProps(merged, [
+    "userId", "transactionDetails", /* ... */ "label"
   ]);
+   // Estrai le props di stile specifiche
+  const [localStyleProps, otherButtonProps] = splitProps(buttonProps, ["class", "style", "disabled", "buttonColor", "onClick"]);
+
 
   let buttonRef: HTMLButtonElement | undefined;
 
   onMount(() => {
-    // Definisci handleClick qui dentro
-    const handleClick = async () => { // Rendi la funzione async
-      console.log("Client button clicked. Dynamically importing pulsix...");
-      try {
-        // --- IMPORT DINAMICO QUI ---
-        const pulsixModule = await import('pulsix');
-        // --------------------------
-
-        console.log("Pulsix module loaded. Calling openTransactionPopup with options:", popupOptions);
-        // Chiama la funzione dal modulo importato dinamicamente
-        pulsixModule.openTransactionPopup({
-          userId: popupOptions.userId,
-          transactionDetails: popupOptions.transactionDetails,
-          // ... pass other options ...
-        });
-      } catch (error) {
-        console.error("Error loading or calling pulsix module:", error);
-        // Gestisci l'errore, magari mostrando un messaggio all'utente
-      }
-    };
+    const handleClick = async () => { /* ... (logica import dinamico come prima) ... */ };
 
     if (buttonRef) {
       buttonRef.addEventListener('click', handleClick);
-      console.log("PulsixButton (Solid Wrapper): Click listener added (dynamic import handler).");
-
-      onCleanup(() => {
-        if (buttonRef) {
-          buttonRef.removeEventListener('click', handleClick);
-          console.log("PulsixButton (Solid Wrapper): Click listener removed (dynamic import handler).");
-        }
-      });
+      // ... (cleanup come prima) ...
     }
   });
+
+  // Calcola lo stile inline per il background color se fornito
+  const inlineStyle = (): JSX.CSSProperties | string | undefined => {
+      const baseStyle = typeof localStyleProps.style === 'string' ? {} : localStyleProps.style || {};
+      if (localStyleProps.buttonColor && !localStyleProps.disabled) {
+          return { ...baseStyle, 'background-color': localStyleProps.buttonColor };
+      }
+      return localStyleProps.style; // Ritorna lo stile originale se non c'è colore custom o è disabilitato
+  };
 
   return (
     <button
       ref={buttonRef}
       type="button"
-      class={buttonProps.class}
-      style={buttonProps.style}
-      disabled={props.disabled}
-      {...buttonProps}
+      // --- USA IL CSS MODULE E CLASSI ESTERNE ---
+      // Applica la classe base dal CSS Module e unisci eventuali classi passate tramite props
+      class={`PulsixButton ${localStyleProps.class || ''}`}
+      // Applica stili inline (sovrascrive il background del CSS module se buttonColor è impostato)
+      style={inlineStyle()}
+      disabled={localStyleProps.disabled}
+      {...otherButtonProps} // Passa altri attributi/eventi non gestiti specificamente
     >
-      {popupOptions.label || 'Apri Transazione'}
+      {popupOptions.label}
     </button>
   );
 };

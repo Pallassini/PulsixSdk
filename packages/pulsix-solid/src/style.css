@@ -1,0 +1,63 @@
+/* PulsixButton.module.css - Stili per il componente wrapper SolidJS */
+
+.pulsixButton { /* Classe base per il bottone */
+  /* Stili base presi dall'esempio precedente */
+  display: inline-block; /* O rimuovi se vuoi il default del bottone */
+  font-family: sans-serif;
+  color: white; /* Colore testo default */
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  white-space: nowrap;
+  transition: background-color 0.2s ease-in-out, transform 0.2s ease-out, box-shadow 0.25s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Colore di sfondo di default (può essere sovrascritto da props) */
+  background-color: #007bff;
+}
+
+/* Stili per Hover (quando non disabilitato) */
+.pulsixButton:not(:disabled):hover {
+  /* Qui puoi ancora usare color-mix se vuoi basarti sul background impostato,
+     ma richiede di passare il colore base come CSS variable inline */
+  /* Alternativa più semplice: definisci un colore hover fisso o basato su classi */
+   filter: brightness(90%); /* Scurisce leggermente il colore base */
+   transform: scale(1.05);
+   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Stili per Active (quando non disabilitato) */
+.pulsixButton:not(:disabled):active {
+   filter: brightness(80%); /* Scurisce di più */
+   transform: scale(0.99);
+   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* Stili per Focus (quando non disabilitato) */
+.pulsixButton:not(:disabled):focus-visible {
+   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5), /* Anello focus */
+               0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Stili per lo stato Disabilitato */
+.pulsixButton:disabled {
+  background-color: #cccccc;
+  color: #666666;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.6; /* Opacità standard per disabilitato */
+}
+
+/* Esempio di animazione (puoi aggiungerla se serve) */
+@keyframes pulseAnimation {
+    /* ... keyframes ... */
+}
+
+.pulsing:not(:disabled) {
+    animation: pulseAnimation 2s infinite;
+}
