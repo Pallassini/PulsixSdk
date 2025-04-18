@@ -6,7 +6,7 @@ import type { PopupConfig } from 'pulsix';
 import type { JSX } from 'solid-js';
 
 // --- IMPORTA IL FILE CSS (Globale ma co-locato) ---
-import './style.css'; // Assicurati che style.css sia nella stessa cartella
+import './Style.css'; // Assicurati che style.css sia nella stessa cartella
 // ---------------------------------------------------
 
 export interface PulsixButtonProps extends Omit<PopupConfig, 'onClose' /* ... */> {
@@ -85,7 +85,7 @@ export const PulsixButton: Component<PulsixButtonProps> = (props) => {
       ref={buttonRef}
       type="button"
       // Applica la classe base globale e le classi esterne
-      class={buttonClasses()}
+      class={`pulsixButton ${buttonClasses()}`}
       // Applica stili inline (per buttonColor o style esterno)
       style={inlineStyle()}
       disabled={localStyleProps.disabled}
