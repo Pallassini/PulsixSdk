@@ -87,7 +87,7 @@ export const PulsixButton: Component<PulsixButtonProps> = (props) => {
       // Applica la classe base globale e le classi esterne
       class={buttonClasses()}
       // Applica stili inline (per buttonColor o style esterno)
-      style={{"background-color":'black',color:'red',"text-align":'center',padding:'120px'}}
+      style={inlineStyle()}
       disabled={localStyleProps.disabled}
       {...otherButtonProps} // Passa altri attributi/eventi non gestiti specificamente
     >
