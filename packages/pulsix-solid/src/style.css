@@ -16,49 +16,60 @@
    }
  }
  /* ----------------------------------------------- */
-
  .pulsixButton {
-   display: inline-block !important;
-   font-family: sans-serif !important;
-   color: white !important;
-   padding: 12px 24px !important;
-   border-radius: 6px !important;
-   font-size: 1.05rem !important;
-   font-weight: 500 !important;
-   border: none !important;
+   /* === Reset/Base Espliciti === */
+   box-sizing: border-box !important; /* Include padding/border nella dimensione totale */
+   -webkit-appearance: none !important; /* Rimuovi stili default iOS/Safari */
+   -moz-appearance: none !important;
+   appearance: none !important; /* Rimuovi stili default sistema */
+   border: none !important; /* Nessun bordo di default */
+   outline: none !important; /* Nessun outline di default (gestito con focus-visible) */
+   margin: 0 !important; /* Nessun margine di default */
+   padding: 12px 24px !important; /* Padding specifico */
+   font-family: sans-serif !important; /* Imposta un font base (o uno specifico) */
+   font-size: 1.05rem !important; /* Dimensione font specifica */
+   font-weight: 500 !important; /* Spessore specifico */
+   line-height: normal !important; /* Altezza linea normale */
+   color: white !important; /* Colore testo base */
+   background-color: #007bff !important; /* Colore sfondo base */
+   text-align: center !important; /* Allineamento testo */
+   text-decoration: none !important; /* Nessuna sottolineatura */
+   vertical-align: middle !important; /* Allineamento verticale */
    cursor: pointer !important;
-   outline: none !important;
    white-space: nowrap !important;
+   user-select: none !important; /* Impedisce la selezione del testo */
+   -webkit-tap-highlight-color: transparent !important; /* Rimuovi highlight su mobile */
+ 
+   /* === Stili di Layout/Aspetto === */
+   display: inline-block !important;
+   border-radius: 6px !important;
    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
    transform: scale(1) !important; /* Stato base transform */
    transition: background-color 0.2s ease-in-out,
                transform 0.2s ease-out,
                box-shadow 0.25s ease-in-out,
-               filter 0.2s ease-in-out !important; /* Aggiunto !important all'intera prop transition */
-   background-color: #007bff !important; /* Colore di sfondo di default */
+               filter 0.2s ease-in-out !important; /* Transizioni */
  }
-
- /* Stili per Hover (quando non disabilitato) */
+ 
+ /* === Stati Interattivi === */
  .pulsixButton:not([disabled]):hover {
    animation: scaleUpEffect 0.3s ease-out forwards !important;
    filter: brightness(90%) !important;
  }
-
- /* Stili per Active (quando non disabilitato) */
+ 
  .pulsixButton:not([disabled]):active {
    filter: brightness(80%) !important;
    transform: scale(0.99) !important;
    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15) !important;
    animation: none !important;
  }
-
- /* Stili per Focus (quando non disabilitato) */
+ 
  .pulsixButton:not([disabled]):focus-visible {
     box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5),
-                0 2px 4px rgba(0, 0, 0, 0.1) !important; /* Applica !important all'intera prop */
+                0 2px 4px rgba(0, 0, 0, 0.1) !important;
  }
-
- /* Stili per lo stato Disabilitato (usa selettore attributo) */
+ 
+ /* === Stato Disabilitato === */
  .pulsixButton[disabled] {
    background-color: #cccccc !important;
    color: #666666 !important;
@@ -69,14 +80,8 @@
    filter: none !important;
    animation: none !important;
  }
-
- /* Animazione pulse (invariata nei keyframes, ma l'applicazione ha !important) */
- @keyframes pulseAnimation {
-     0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 123, 255, 0.4); }
-     70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 123, 255, 0); }
-     100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 123, 255, 0); }
- }
-
+ 
+ /* === Animazione Pulsing (Opzionale) === */
  .pulsixButton.pulsing:not([disabled]) {
      animation: pulseAnimation 2s infinite !important;
  }
