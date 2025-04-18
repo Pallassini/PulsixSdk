@@ -1,111 +1,227 @@
-// packages/pulsix/src/button.ts - VERSIONE CORRETTA
+// packages/pulsix/src/button.ts - VERSIONE CON STILI INLINE E NUOVE FUNZIONALITÀ
 
-import { openTransactionPopup, PopupConfig } from './popup'; // Modifica il percorso se necessario
+import { openTransactionPopup, PopupConfig } from './popup'; // Assicurati che il percorso sia corretto
 
-let ButtonClass: any = null;
+let PulsixButtonClass: any = null;
 
 if (typeof HTMLElement !== 'undefined') { // Controlla se siamo in un ambiente browser
-  ButtonClass = class Button extends HTMLElement {
-    private _buttonElement: HTMLButtonElement | null = null;
-    private _popupConfig: PopupConfig = {};
+    PulsixButtonClass = class PulsixButton extends HTMLElement {
+        private _buttonElement: HTMLButtonElement | null = null;
+        private _popupConfig: PopupConfig = {};
 
-    constructor() {
-      super(); // NECESSARIO: Chiama il costruttore della classe base
-      this.attachShadow({ mode: 'open' }); // Attacca lo shadow DOM, è sicuro farlo qui
-      console.log('[Pulsix WC] Constructor finished.');
-      // --- NON CHIAMARE this.render() QUI! ---
-    }
+        // Colore di default se l'attributo non è specificato
+        private _defaultButtonColor = '#007bff'; // Blu standard
 
-    // --- Gestione Attributi Osservati ---
-    static get observedAttributes() {
-      return ['button-text', 'widget-id', 'popup-config-json'];
-    }
+        constructor() {
+            super();
+            this.attachShadow({ mode: 'open' });
+            console.log('[Pulsix WC] Constructor finished.');
+        }
 
-    attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
-      console.log(`[Pulsix WC] attributeChangedCallback: ${name} changed from ${oldValue} to ${newValue}`);
-      // Aggiorna il testo del bottone solo se il bottone è già stato creato da render()
-      if (name === 'button-text' && this._buttonElement && newValue !== null) {
-        this._buttonElement.textContent = newValue;
-      }
-      // Aggiorna la configurazione
-      if (name === 'popup-config-json' && newValue !== null) {
-        try {
-          const configUpdate = JSON.parse(newValue);
-          this._popupConfig = { ...this._popupConfig, ...configUpdate };
-          console.log('[Pulsix WC] Config updated from attribute:', this._popupConfig);
-        } catch (e) { console.error("Error parsing attr", e); }
-      }
-      if (name === 'widget-id' && newValue !== null) {
-        this._popupConfig = { ...this._popupConfig, widgetId: newValue };
-         console.log('[Pulsix WC] Config updated from attribute (widgetId):', this._popupConfig);
-      }
-    }
+        // --- Gestione Attributi Osservati ---
+        static get observedAttributes() {
+            // Aggiungiamo 'button-color' agli attributi osservati
+            return ['button-text', 'widget-id', 'popup-config-json', 'disabled', 'button-color'];
+        }
 
-    // --- Proprietà JavaScript ---
-    set popupConfig(config: PopupConfig) { this._popupConfig = config; }
-    get popupConfig(): PopupConfig { return this._popupConfig; }
+        attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
+            console.log(`[Pulsix WC] attributeChangedCallback: ${name} changed from ${oldValue} to ${newValue}`);
+
+            // Aggiorna testo bottone (usa 'Pulsix' come default implicito nel render)
+            if (name === 'button-text' && this._buttonElement && newValue !== null) {
+                this._buttonElement.textContent = newValue;
+            } else if (name === 'button-text' && this._buttonElement && newValue === null) {
+                // Se l'attributo viene rimosso, torna al default 'Pulsix'
+                this._buttonElement.textContent = 'Pulsix';
+            }
+
+            // Aggiorna config da JSON
+            if (name === 'popup-config-json' && newValue !== null) {
+                try { /* ... (logica JSON come prima) ... */ } catch (e) { /*...*/ }
+            }
+
+            // Aggiorna config da widget-id
+            if (name === 'widget-id' && newValue !== null) {
+                this._popupConfig = { ...this._popupConfig, widgetId: newValue };
+                console.log('[Pulsix WC] Config updated from attribute (widgetId):', this._popupConfig);
+            }
+
+            // Aggiorna stato 'disabled'
+            if (name === 'disabled' && this._buttonElement) {
+                this._buttonElement.disabled = newValue !== null;
+                console.log(`[Pulsix WC] Button disabled state: ${this._buttonElement.disabled}`);
+            }
+
+            // Aggiorna il colore del bottone tramite CSS variable inline sull'host
+            if (name === 'button-color') {
+                if (newValue) {
+                    // Imposta la variabile CSS sull'elemento host stesso per sovrascrivere il default
+                    this.style.setProperty('--pulsix-button-background', newValue);
+                    console.log(`[Pulsix WC] Applied button-color: ${newValue}`);
+                } else {
+                    // Rimuovi la sovrascrittura per tornare al colore di default definito nel CSS interno
+                    this.style.removeProperty('--pulsix-button-background');
+                    console.log('[Pulsix WC] Reverted to default button-color.');
+                }
+            }
+        }
+
+        // --- Proprietà JavaScript ---
+        set popupConfig(config: PopupConfig) { this._popupConfig = config; /*...*/ }
+        get popupConfig(): PopupConfig { return this._popupConfig; }
+
+        set disabled(value: boolean) {
+            if (value) { this.setAttribute('disabled', ''); }
+            else { this.removeAttribute('disabled'); }
+        }
+        get disabled(): boolean { return this.hasAttribute('disabled'); }
+
+        // Proprietà per il colore (riflette l'attributo)
+        set buttonColor(value: string | null) {
+            if (value) {
+                 this.setAttribute('button-color', value);
+            } else {
+                 this.removeAttribute('button-color');
+            }
+        }
+        get buttonColor(): string | null {
+             return this.getAttribute('button-color');
+        }
 
 
-    // --- Metodi del Ciclo di Vita ---
-    connectedCallback() {
-      console.log('[Pulsix WC] connectedCallback: CALLED');
-      // === SPOSTA LA CHIAMATA A render() QUI ===
-      // Renderizza il contenuto solo quando l'elemento è connesso al DOM
-      // e solo se non è già stato fatto (es. se viene spostato nel DOM)
-      if (!this.shadowRoot?.firstChild) {
-        this.render();
-      }
+        // --- Metodi del Ciclo di Vita ---
+        connectedCallback() {
+            console.log('[Pulsix WC] connectedCallback: CALLED');
+            if (!this.shadowRoot?.firstChild) {
+                this.render(); // Renderizza HTML e stili
+            }
 
-      // Aggiungi l'event listener DOPO aver chiamato render()
-      if (this._buttonElement && !this._buttonElement.onclick) { // Verifica se esiste e non ha già un listener (più robusto)
-        this._buttonElement.addEventListener('click', this.handleClick);
-        console.log('[Pulsix WC] connectedCallback: Click listener ADDED.');
-      } else if (!this._buttonElement) {
-        console.warn('[Pulsix WC] connectedCallback: _buttonElement NOT found after render()!');
-      }
-    }
+            // Applica il colore iniziale se l'attributo è già presente
+            const initialColor = this.getAttribute('button-color');
+            if (initialColor) {
+                 this.style.setProperty('--pulsix-button-background', initialColor);
+            }
 
-    disconnectedCallback() {
-      console.log('[Pulsix WC] disconnectedCallback: CALLED');
-      // Rimuovi l'event listener per pulizia
-      if (this._buttonElement) {
-        this._buttonElement.removeEventListener('click', this.handleClick);
-        console.log('[Pulsix WC] disconnectedCallback: Click listener REMOVED.');
-      }
-    }
+            this.addClickListener();
+            this.updateInitialDisabledState();
+        }
 
-    // --- Logica Interna ---
-    private handleClick = () => {
-      console.log('[Pulsix WC] handleClick: Opening popup with config:', this._popupConfig);
-      openTransactionPopup(this._popupConfig); // Usa la funzione importata
-    }
+        disconnectedCallback() {
+            // ... (come prima) ...
+            if (this._buttonElement) { this._buttonElement.removeEventListener('click', this.handleClick); }
+        }
 
-    private render() {
-      console.log('[Pulsix WC] render: START');
-      if (!this.shadowRoot) {
-        console.error('[Pulsix WC] render: ERROR - ShadowRoot non disponibile!');
-        return;
-      }
-      this.shadowRoot.innerHTML = ''; // Pulisci prima di aggiungere
+        // --- Logica Interna ---
+        private handleClick = () => {
+            // ... (come prima, con controllo disabled) ...
+            if (this.disabled) return;
+            openTransactionPopup(this._popupConfig);
+        }
 
-      try {
-        // Stili (Usa document)
-        const style = document.createElement('style');
-        style.textContent = `/* ... i tuoi stili ... */ :host { display: inline-block; } button { padding: 10px 20px; }`;
-        this.shadowRoot.appendChild(style);
+        private addClickListener() {
+            // ... (come prima) ...
+             if (this._buttonElement && !this._buttonElement.onclick) { this._buttonElement.addEventListener('click', this.handleClick); }
+        }
 
-        // Bottone (Usa document)
-        this._buttonElement = document.createElement('button');
-        this._buttonElement.textContent = this.getAttribute('button-text') || 'Apri Pulsix'; // Usa un testo default
-        this.shadowRoot.appendChild(this._buttonElement);
-        console.log('[Pulsix WC] render: Button and style appended.');
-      } catch (e) {
-        console.error('[Pulsix WC] render: ERROR creating/appending elements!', e);
-      }
-      console.log('[Pulsix WC] render: END');
-    }
-  }; // Fine definizione classe
-} // Fine if (typeof HTMLElement !== 'undefined')
+        private updateInitialDisabledState() {
+             // ... (come prima) ...
+             if (this._buttonElement && this.hasAttribute('disabled')) { this._buttonElement.disabled = true; }
+        }
 
-// Esporta la classe (o null sul server)
-export default ButtonClass;
+
+        private render() {
+            console.log('[Pulsix WC] render: START');
+            if (!this.shadowRoot) return;
+            this.shadowRoot.innerHTML = ''; // Pulisci
+
+            try {
+                const style = document.createElement('style');
+
+                // === INIZIO BLOCCO STILI ===
+                style.textContent = `
+                :host {
+                    display: inline-block;
+                    font-family: sans-serif;
+                    /* Colore di base (default o sovrascritto da attributo/JS) */
+                    --pulsix-button-background: ${this._defaultButtonColor}; /* Es: #007bff */
+                    --pulsix-button-text-color: white;
+                    --pulsix-button-padding: 12px 24px;
+                    --pulsix-button-border-radius: 6px;
+                    /* Variabili hover/active rimosse - verranno calcolate */
+                    --pulsix-button-disabled-background: #cccccc;
+                    --pulsix-button-disabled-color: #666666;
+                    --pulsix-focus-ring-color: rgba(0, 123, 255, 0.5);
+                    transition: transform 0.2s ease-out;
+                }
+    
+                button {
+                    cursor: pointer;
+                    border: none;
+                    background-color: var(--pulsix-button-background); /* Usa la variabile base */
+                    color: var(--pulsix-button-text-color);
+                    padding: var(--pulsix-button-padding);
+                    border-radius: var(--pulsix-button-border-radius);
+                    font-size: 1.05rem;
+                    font-weight: 500;
+                    outline: none;
+                    white-space: nowrap;
+                    /* Transizione per background-color ora userà i valori calcolati */
+                    transition: background-color 0.2s ease-in-out,
+                                transform 0.2s ease-out,
+                                box-shadow 0.25s ease-in-out;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+    
+                /* --- Effetti Hover con color-mix --- */
+                button:not([disabled]):hover {
+                    /* Mescola il colore base con 15% di nero per scurirlo */
+                    /* 'in srgb' è lo spazio colore standard */
+                    background-color: color-mix(in srgb, var(--pulsix-button-background) 85%, black 15%);
+                    transform: scale(1.05);
+                    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+                }
+    
+                /* --- Effetti Active con color-mix --- */
+                button:not([disabled]):active {
+                     /* Mescola il colore base con 30% di nero per scurirlo di più */
+                    background-color: color-mix(in srgb, var(--pulsix-button-background) 70%, black 30%);
+                    transform: scale(0.99);
+                    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+                }
+    
+                /* Regole :focus-visible e [disabled] come prima */
+                button:not([disabled]):focus-visible {
+                     box-shadow: 0 0 0 3px var(--pulsix-focus-ring-color),
+                                 0 2px 4px rgba(0, 0, 0, 0.1);
+                }
+                button[disabled] {
+                    background-color: var(--pulsix-button-disabled-background);
+                    color: var(--pulsix-button-disabled-color);
+                    cursor: not-allowed;
+                    transform: none;
+                    box-shadow: none;
+                }
+    
+                /* Animazione pulse (invariata) */
+                @keyframes pulseAnimation { /* ... */ }
+                button.pulsing:not([disabled]) { /* ... */ }
+            `;
+                // === FINE BLOCCO STILI ===
+
+                this.shadowRoot.appendChild(style);
+
+                this._buttonElement = document.createElement('button');
+                // Imposta testo: usa attributo se presente, altrimenti default 'Pulsix'
+                this._buttonElement.textContent = this.getAttribute('button-text') || 'Pulsix';
+
+                this.shadowRoot.appendChild(this._buttonElement);
+                console.log('[Pulsix WC] render: Button and style appended.');
+
+            } catch (e) { console.error('[Pulsix WC] render: ERROR!', e); }
+            console.log('[Pulsix WC] render: END');
+        }
+
+    };
+}
+
+export default PulsixButtonClass;

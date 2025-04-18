@@ -1,2 +1,2 @@
-declare let ButtonClass: any;
-export default ButtonClass;
+declare let PulsixButtonClass: any;
+export default PulsixButtonClass;

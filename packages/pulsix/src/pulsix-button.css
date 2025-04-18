@@ -1,0 +1,12 @@
+/* pulsix-button.css - TEST SEMPLICE */
+button {
+  background-color: red !important; /* Rosso brillante! */
+  color: yellow !important;
+  padding: 25px !important;
+  font-size: 20px !important;
+  border: 5px dashed lime !important;
+}
+:host {
+  border: 8px solid magenta !important;
+  display: block !important; /* Assicurati che sia visibile */
+}

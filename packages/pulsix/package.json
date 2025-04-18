@@ -1,6 +1,6 @@
 {
   "name": "pulsix",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "SDK per aggiungere transazioni tramite popup",
   "type": "module",
   "files": [
