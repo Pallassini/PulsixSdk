@@ -1,6 +1,6 @@
 {
   "name": "pulsix-solid",
-  "version": "1.0.8", 
+  "version": "1.0.9", 
   "description": "React components for Pulsix SDK",
   "type": "module",
   "main": "./dist/index.js", 

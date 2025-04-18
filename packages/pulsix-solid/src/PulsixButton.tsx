@@ -52,7 +52,7 @@ export const PulsixButton: Component<PulsixButtonProps> = (props) => {
       type="button"
       // --- USA IL CSS MODULE E CLASSI ESTERNE ---
       // Applica la classe base dal CSS Module e unisci eventuali classi passate tramite props
-      class={`PulsixButton ${localStyleProps.class || ''}`}
+      class={`pulsixButton ${localStyleProps.class || ''}`}
       // Applica stili inline (sovrascrive il background del CSS module se buttonColor è impostato)
       style={inlineStyle()}
       disabled={localStyleProps.disabled}
