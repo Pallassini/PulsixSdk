@@ -22,7 +22,7 @@ export const PulsixButton: Component<PulsixButtonProps> = (props) => {
   const [isActive, setIsActive] = createSignal(false);
   // ---------------------------------------------
 
-  const merged = mergeProps({ label: 'Apri Transazione', buttonColor: '#007bff' }, props); // Default anche per colore
+  const merged = mergeProps({ label: 'Pulsix', buttonColor: '#007bff' }, props); // Default anche per colore
   const [popupOptions, buttonProps] = splitProps(merged, [
     "userId", "transactionDetails", /* ... */ "label"
   ]);
