@@ -38,11 +38,7 @@ export const PulsixButton: Component<PulsixButtonProps> = (props) => {
       try {
           const pulsixModule = await import('pulsix');
           console.log("Pulsix module loaded...");
-          pulsixModule.openTransactionPopup({
-              userId: popupOptions.userId,
-              transactionDetails: popupOptions.transactionDetails,
-              // ...
-          });
+          pulsixModule.openTransactionPopup();
            // Chiama l'onClick esterno se fornito
           if (typeof localStyleProps.onClick === 'function') {
                 (localStyleProps.onClick)(event);
