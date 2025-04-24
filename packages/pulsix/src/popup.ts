@@ -60,6 +60,7 @@ export function openTransactionPopup(config: PopupConfig = {}): void {
   console.log('Window Features String:', windowFeatures);
 
   // Apri la popup con l'URL fisso
+  console.log('openURL:', popupUrl)
   const popup = window.open(popupUrl, 'SolidStart_TransactionPopup', windowFeatures);
 
   // Gestione popup bloccata 
