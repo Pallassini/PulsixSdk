@@ -14,7 +14,7 @@ export interface PopupConfig {
 // --- URL FISSO DELLA TUA APPLICAZIONE POPUP ---
 // !!! MODIFICA QUESTO CON L'URL REALE DOVE LA TUA APP SOLIDSTART SARÀ OSPITATA !!!
 const POPUP_APP_BASE_URL = 'http://localhost:3000/login'; // Esempio: URL di produzione
-const POPUP_APP_PATH = '/login'; // Il percorso specifico
+//const POPUP_APP_PATH = '/login'; // Il percorso specifico
 // ------------------------------------------------
 
 export function openTransactionPopup(config: PopupConfig = {}): void {
@@ -33,7 +33,7 @@ export function openTransactionPopup(config: PopupConfig = {}): void {
   console.log(`Pulsix SDK chiamato da: Origin=${sdkUserOrigin}, Href=${sdkUserHref}`); 
 
   // 2. Usare l'URL fisso definito sopra
-  let popupUrl = `${POPUP_APP_BASE_URL}${POPUP_APP_PATH}`;
+  let popupUrl = `${POPUP_APP_BASE_URL}`;
   if (widgetId) {
     const separator = popupUrl.includes('?') ? '&' : '?';
     popupUrl += `${separator}widgetId=${encodeURIComponent(widgetId)}`;
