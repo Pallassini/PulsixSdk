@@ -13,7 +13,7 @@ export interface PopupConfig {
 
 // --- URL FISSO DELLA TUA APPLICAZIONE POPUP ---
 // !!! MODIFICA QUESTO CON L'URL REALE DOVE LA TUA APP SOLIDSTART SARÀ OSPITATA !!!
-const POPUP_APP_BASE_URL = 'http://localhost:3000'; // Esempio: URL di produzione
+const POPUP_APP_BASE_URL = 'http://localhost:3000/login'; // Esempio: URL di produzione
 const POPUP_APP_PATH = '/login'; // Il percorso specifico
 // ------------------------------------------------
 
